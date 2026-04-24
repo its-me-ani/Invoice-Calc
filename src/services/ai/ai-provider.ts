@@ -12,9 +12,18 @@ function toRawBase64(dataUrl: string): string {
   return comma >= 0 ? dataUrl.slice(comma + 1) : dataUrl;
 }
 
+export function cleanEndpoint(raw: string, isOpenAI = false): string {
+  let clean = raw.trim().replace(/^["']|["']$/g, '').replace(/\/+$/, '');
+  if (isOpenAI && clean.endsWith('/v1')) {
+    clean = clean.slice(0, -3);
+  }
+  return clean;
+}
+
 function buildOllamaRequest(config: AiProviderConfig, messages: ChatMessage[]): ProviderRequest {
+  const endpoint = cleanEndpoint(config.endpoint);
   return {
-    url: `${config.endpoint}/api/chat`,
+    url: `${endpoint}/api/chat`,
     body: {
       model: config.model,
       messages: messages.map(m => {
@@ -36,7 +45,7 @@ function buildOllamaRequest(config: AiProviderConfig, messages: ChatMessage[]): 
 }
 
 function buildOpenAIRequest(config: AiProviderConfig, messages: ChatMessage[]): ProviderRequest {
-  const endpoint = config.endpoint.replace(/\/+$/, '');
+  const endpoint = cleanEndpoint(config.endpoint, true);
   return {
     url: `${endpoint}/v1/chat/completions`,
     body: {

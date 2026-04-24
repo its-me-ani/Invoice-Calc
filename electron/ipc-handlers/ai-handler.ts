@@ -15,9 +15,18 @@ interface ChatMessage {
   images?: string[]; // base64 data URLs
 }
 
+function cleanEndpoint(raw: string, isOpenAI = false): string {
+  let clean = raw.trim().replace(/^["']|["']$/g, '').replace(/\/+$/, '');
+  if (isOpenAI && clean.endsWith('/v1')) {
+    clean = clean.slice(0, -3);
+  }
+  return clean;
+}
+
 function buildOllamaRequest(config: AiConfig, messages: ChatMessage[]) {
+  const endpoint = cleanEndpoint(config.endpoint);
   return {
-    url: `${config.endpoint}/api/chat`,
+    url: `${endpoint}/api/chat`,
     body: {
       model: config.model,
       messages: messages.map(m => {
@@ -41,7 +50,7 @@ function buildOllamaRequest(config: AiConfig, messages: ChatMessage[]) {
 }
 
 function buildOpenAICompatibleRequest(config: AiConfig, messages: ChatMessage[]) {
-  const endpoint = config.endpoint.replace(/\/+$/, '');
+  const endpoint = cleanEndpoint(config.endpoint, true);
   return {
     url: `${endpoint}/v1/chat/completions`,
     body: {
@@ -116,7 +125,7 @@ export function registerAiHandlers() {
 
   ipcMain.handle('ai:test-connection', async (_event, _provider: string, config: AiConfig) => {
     try {
-      const endpoint = config.endpoint.replace(/\/+$/, '');
+      const endpoint = cleanEndpoint(config.endpoint, config.type !== 'ollama');
       if (config.type === 'ollama') {
         const res = await fetch(`${endpoint}/api/tags`);
         return res.ok;
@@ -132,7 +141,7 @@ export function registerAiHandlers() {
   });
 
   ipcMain.handle('ai:list-models', async (_event, _provider: string, config: AiConfig) => {
-    const endpoint = config.endpoint.replace(/\/+$/, '');
+    const endpoint = cleanEndpoint(config.endpoint, config.type !== 'ollama');
     if (config.type === 'ollama') {
       const res = await fetch(`${endpoint}/api/tags`);
       if (!res.ok) return [];

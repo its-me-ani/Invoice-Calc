@@ -233,9 +233,16 @@ const SettingsPage: React.FC = () => {
   };
 
   const handleAiSave = () => {
+    // Clean up input errors like leading quotes or trailing /v1 for a cleaner display
+    let cleanedEndpoint = aiEndpoint.trim().replace(/^["']|["']$/g, '').replace(/\/+$/, '');
+    if ((aiProvider === 'custom' || aiProvider === 'lmstudio') && cleanedEndpoint.endsWith('/v1')) {
+      cleanedEndpoint = cleanedEndpoint.slice(0, -3);
+    }
+    setAiEndpoint(cleanedEndpoint);
+
     saveAiSettings({
       type: aiProvider,
-      endpoint: aiEndpoint,
+      endpoint: cleanedEndpoint,
       model: aiModel,
       apiKey: aiApiKey || undefined,
       temperature: aiTemperature,
@@ -246,8 +253,17 @@ const SettingsPage: React.FC = () => {
 
   const handleAiTestConnection = async () => {
     setAiConnectionStatus('testing');
-    handleAiSave();
-    const config = { type: aiProvider, endpoint: aiEndpoint, model: aiModel, apiKey: aiApiKey || undefined, temperature: aiTemperature };
+    
+    let cleanedEndpoint = aiEndpoint.trim().replace(/^["']|["']$/g, '').replace(/\/+$/, '');
+    if ((aiProvider === 'custom' || aiProvider === 'lmstudio') && cleanedEndpoint.endsWith('/v1')) {
+      cleanedEndpoint = cleanedEndpoint.slice(0, -3);
+    }
+    setAiEndpoint(cleanedEndpoint);
+
+    const config = { type: aiProvider, endpoint: cleanedEndpoint, model: aiModel, apiKey: aiApiKey || undefined, temperature: aiTemperature };
+    
+    saveAiSettings(config);
+    
     const ok = await testAiConnection(config);
     setAiConnectionStatus(ok ? 'success' : 'failed');
     if (ok) {

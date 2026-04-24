@@ -1,5 +1,5 @@
 import { AiProviderConfig, ChatMessage } from '../../types/ai';
-import { buildRequest, extractContent } from './ai-provider';
+import { buildRequest, extractContent, cleanEndpoint } from './ai-provider';
 
 function isElectron(): boolean {
   return typeof window !== 'undefined' && window.electronAPI !== undefined;
@@ -23,7 +23,7 @@ export async function testAiConnection(config: AiProviderConfig): Promise<boolea
     return window.electronAPI!.ai.testConnection(config.type, config);
   }
   try {
-    const endpoint = config.endpoint.replace(/\/+$/, '');
+    const endpoint = cleanEndpoint(config.endpoint, config.type !== 'ollama');
     const url = config.type === 'ollama'
       ? `${endpoint}/api/tags`
       : `${endpoint}/v1/models`;
@@ -41,7 +41,7 @@ export async function listAiModels(config: AiProviderConfig): Promise<string[]> 
     return window.electronAPI!.ai.listModels(config.type, config);
   }
   try {
-    const endpoint = config.endpoint.replace(/\/+$/, '');
+    const endpoint = cleanEndpoint(config.endpoint, config.type !== 'ollama');
     if (config.type === 'ollama') {
       const res = await fetch(`${endpoint}/api/tags`);
       if (!res.ok) return [];
