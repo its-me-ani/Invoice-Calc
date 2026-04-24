@@ -1,7 +1,0 @@
-{
-  "name": "invoice",
-  "integrations": {
-    "capacitor": {}
-  },
-  "type": "custom"
-}
