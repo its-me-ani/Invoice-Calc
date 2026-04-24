@@ -12,6 +12,11 @@ function toRawBase64(dataUrl: string): string {
   return comma >= 0 ? dataUrl.slice(comma + 1) : dataUrl;
 }
 
+export function cleanApiKey(key: string | undefined): string | undefined {
+  if (!key) return undefined;
+  return key.trim().replace(/^["']|["']$/g, '');
+}
+
 export function cleanEndpoint(raw: string, isOpenAI = false): string {
   let clean = raw.trim().replace(/^["']|["']$/g, '').replace(/\/+$/, '');
   if (isOpenAI && clean.endsWith('/v1')) {
@@ -46,6 +51,7 @@ function buildOllamaRequest(config: AiProviderConfig, messages: ChatMessage[]): 
 
 function buildOpenAIRequest(config: AiProviderConfig, messages: ChatMessage[]): ProviderRequest {
   const endpoint = cleanEndpoint(config.endpoint, true);
+  const apiKey = cleanApiKey(config.apiKey);
   return {
     url: `${endpoint}/v1/chat/completions`,
     body: {
@@ -70,7 +76,7 @@ function buildOpenAIRequest(config: AiProviderConfig, messages: ChatMessage[]): 
     },
     headers: {
       'Content-Type': 'application/json',
-      ...(config.apiKey ? { Authorization: `Bearer ${config.apiKey}` } : {}),
+      ...(apiKey ? { Authorization: `Bearer ${apiKey}` } : {}),
     },
   };
 }

@@ -1,5 +1,5 @@
 import { AiProviderConfig, ChatMessage } from '../../types/ai';
-import { buildRequest, extractContent, cleanEndpoint } from './ai-provider';
+import { buildRequest, extractContent, cleanEndpoint, cleanApiKey } from './ai-provider';
 
 function isElectron(): boolean {
   return typeof window !== 'undefined' && window.electronAPI !== undefined;
@@ -24,11 +24,12 @@ export async function testAiConnection(config: AiProviderConfig): Promise<boolea
   }
   try {
     const endpoint = cleanEndpoint(config.endpoint, config.type !== 'ollama');
+    const apiKey = cleanApiKey(config.apiKey);
     const url = config.type === 'ollama'
       ? `${endpoint}/api/tags`
       : `${endpoint}/v1/models`;
     const headers: Record<string, string> = {};
-    if (config.apiKey) headers.Authorization = `Bearer ${config.apiKey}`;
+    if (apiKey) headers.Authorization = `Bearer ${apiKey}`;
     const res = await fetch(url, { headers });
     return res.ok;
   } catch {
@@ -42,6 +43,7 @@ export async function listAiModels(config: AiProviderConfig): Promise<string[]> 
   }
   try {
     const endpoint = cleanEndpoint(config.endpoint, config.type !== 'ollama');
+    const apiKey = cleanApiKey(config.apiKey);
     if (config.type === 'ollama') {
       const res = await fetch(`${endpoint}/api/tags`);
       if (!res.ok) return [];
@@ -49,7 +51,7 @@ export async function listAiModels(config: AiProviderConfig): Promise<string[]> 
       return (data.models ?? []).map((m: { name: string }) => m.name);
     } else {
       const headers: Record<string, string> = {};
-      if (config.apiKey) headers.Authorization = `Bearer ${config.apiKey}`;
+      if (apiKey) headers.Authorization = `Bearer ${apiKey}`;
       const res = await fetch(`${endpoint}/v1/models`, { headers });
       if (!res.ok) return [];
       const data = await res.json();

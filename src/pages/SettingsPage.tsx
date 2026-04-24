@@ -240,11 +240,17 @@ const SettingsPage: React.FC = () => {
     }
     setAiEndpoint(cleanedEndpoint);
 
+    // Clean API Key
+    const cleanedApiKey = aiApiKey ? aiApiKey.trim().replace(/^["']|["']$/g, '') : undefined;
+    if (cleanedApiKey !== aiApiKey) {
+      setAiApiKey(cleanedApiKey || '');
+    }
+
     saveAiSettings({
       type: aiProvider,
       endpoint: cleanedEndpoint,
       model: aiModel,
-      apiKey: aiApiKey || undefined,
+      apiKey: cleanedApiKey,
       temperature: aiTemperature,
     });
     setToastMessage("AI settings saved");
@@ -260,7 +266,12 @@ const SettingsPage: React.FC = () => {
     }
     setAiEndpoint(cleanedEndpoint);
 
-    const config = { type: aiProvider, endpoint: cleanedEndpoint, model: aiModel, apiKey: aiApiKey || undefined, temperature: aiTemperature };
+    const cleanedApiKey = aiApiKey ? aiApiKey.trim().replace(/^["']|["']$/g, '') : undefined;
+    if (cleanedApiKey !== aiApiKey) {
+      setAiApiKey(cleanedApiKey || '');
+    }
+
+    const config = { type: aiProvider, endpoint: cleanedEndpoint, model: aiModel, apiKey: cleanedApiKey, temperature: aiTemperature };
     
     saveAiSettings(config);
     

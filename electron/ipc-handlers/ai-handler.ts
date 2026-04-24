@@ -49,8 +49,14 @@ function buildOllamaRequest(config: AiConfig, messages: ChatMessage[]) {
   };
 }
 
+function cleanApiKey(key: string | undefined): string | undefined {
+  if (!key) return undefined;
+  return key.trim().replace(/^["']|["']$/g, '');
+}
+
 function buildOpenAICompatibleRequest(config: AiConfig, messages: ChatMessage[]) {
   const endpoint = cleanEndpoint(config.endpoint, true);
+  const apiKey = cleanApiKey(config.apiKey);
   return {
     url: `${endpoint}/v1/chat/completions`,
     body: {
@@ -71,8 +77,8 @@ function buildOpenAICompatibleRequest(config: AiConfig, messages: ChatMessage[])
       temperature: config.temperature ?? 0.3,
       ...(config.maxTokens ? { max_tokens: config.maxTokens } : {}),
     },
-    headers: config.apiKey
-      ? { Authorization: `Bearer ${config.apiKey}` }
+    headers: apiKey
+      ? { Authorization: `Bearer ${apiKey}` }
       : {},
   };
 }
@@ -126,12 +132,13 @@ export function registerAiHandlers() {
   ipcMain.handle('ai:test-connection', async (_event, _provider: string, config: AiConfig) => {
     try {
       const endpoint = cleanEndpoint(config.endpoint, config.type !== 'ollama');
+      const apiKey = cleanApiKey(config.apiKey);
       if (config.type === 'ollama') {
         const res = await fetch(`${endpoint}/api/tags`);
         return res.ok;
       } else {
         const res = await fetch(`${endpoint}/v1/models`, {
-          headers: config.apiKey ? { Authorization: `Bearer ${config.apiKey}` } : {},
+          headers: apiKey ? { Authorization: `Bearer ${apiKey}` } : {},
         });
         return res.ok;
       }
@@ -142,6 +149,7 @@ export function registerAiHandlers() {
 
   ipcMain.handle('ai:list-models', async (_event, _provider: string, config: AiConfig) => {
     const endpoint = cleanEndpoint(config.endpoint, config.type !== 'ollama');
+    const apiKey = cleanApiKey(config.apiKey);
     if (config.type === 'ollama') {
       const res = await fetch(`${endpoint}/api/tags`);
       if (!res.ok) return [];
@@ -149,7 +157,7 @@ export function registerAiHandlers() {
       return (data.models ?? []).map((m: { name: string }) => m.name);
     } else {
       const res = await fetch(`${endpoint}/v1/models`, {
-        headers: config.apiKey ? { Authorization: `Bearer ${config.apiKey}` } : {},
+        headers: apiKey ? { Authorization: `Bearer ${apiKey}` } : {},
       });
       if (!res.ok) return [];
       const data = await res.json();
