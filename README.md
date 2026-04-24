@@ -2,7 +2,7 @@
 
 # Open Invoice Claw
 
-<img src="public/app-listing/app-icons/icon-only.png" alt="Open Invoice Claw Logo" width="150" height="150" style="border-radius: 30px;">
+<img src="resources/app-listing/app-icons/icon-only.png" alt="Open Invoice Claw Logo" width="150" height="150" style="border-radius: 30px;">
 
 ### AI-Powered Offline Invoice Management
 
@@ -27,14 +27,14 @@
 <div align="center">
 <table>
   <tr>
-    <td align="center"><img src="public/app-listing/mobile-ss/Welcome-screen.png" width="200"/><br/><b>Welcome Screen</b></td>
-    <td align="center"><img src="public/app-listing/mobile-ss/Business-info.png" width="200"/><br/><b>Business Setup</b></td>
-    <td align="center"><img src="public/app-listing/mobile-ss/files.png" width="200"/><br/><b>Invoice Files</b></td>
+    <td align="center"><img src="resources/app-listing/mobile-ss/Welcome-screen.png" width="200"/><br/><b>Welcome Screen</b></td>
+    <td align="center"><img src="resources/app-listing/mobile-ss/Business-info.png" width="200"/><br/><b>Business Setup</b></td>
+    <td align="center"><img src="resources/app-listing/mobile-ss/files.png" width="200"/><br/><b>Invoice Files</b></td>
   </tr>
   <tr>
-    <td align="center"><img src="public/app-listing/mobile-ss/invoice1.png" width="200"/><br/><b>Invoice Editor</b></td>
-    <td align="center"><img src="public/app-listing/mobile-ss/edit.png" width="200"/><br/><b>Quick Edit</b></td>
-    <td align="center"><img src="public/app-listing/mobile-ss/export.png" width="200"/><br/><b>PDF Export</b></td>
+    <td align="center"><img src="resources/app-listing/mobile-ss/invoice1.png" width="200"/><br/><b>Invoice Editor</b></td>
+    <td align="center"><img src="resources/app-listing/mobile-ss/edit.png" width="200"/><br/><b>Quick Edit</b></td>
+    <td align="center"><img src="resources/app-listing/mobile-ss/export.png" width="200"/><br/><b>PDF Export</b></td>
   </tr>
 </table>
 </div>
